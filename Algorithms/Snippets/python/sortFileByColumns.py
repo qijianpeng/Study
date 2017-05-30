@@ -5,4 +5,4 @@ col = 1
 for line in sorted(lines, key=lambda line: int(float(line.split()[col]))):
     output.write(line)
 
-output.close()
+output.close() 
