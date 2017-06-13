@@ -1,6 +1,7 @@
 # DRPC(Distributed Remote Procedure Call)分布式远程调用
 
 ![DRPC Workflow](./figures/drpc-workflow.png)
+
 A client sends the DRPC server the name of the **function** to execute and the **arguments** to that function. The topology implementing that function uses a `DRPCSpout` to receive a function invocation stream from the DRPC server. __Each function invocation is tagged with a unique id  __by the DRPC server. The topology then computes the result and at the end of the topology a bolt called `ReturnResults` connects to the DRPC server and gives it the result for the function invocation id. The DRPC server then uses the id to match up that result with which client is waiting, unblocks the waiting client, and sends it the result.
 
 ## DRPC topologies type
