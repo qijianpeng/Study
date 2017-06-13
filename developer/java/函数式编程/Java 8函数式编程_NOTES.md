@@ -51,6 +51,21 @@
 
 
 ``` java
+// Methods: of, collect, forEach
 List<String> collected = Stream.of("a","b","c").collect(Collectors.toList());
-collected.stream().forEach(s -> System.out.println(s));
+collected.stream().forEach(e -> System.out.print(e));
+//Outputs:
+/**
+* abc
+**/
+```
+
+``` java
+//Methods: map( 转换元素类型 )
+List<String> collected = Stream.of("a","b","c").map(string -> string.toUpperCase()).collect(Collectors.toList());
+   collected.forEach(e -> System.out.print(e));
+//Outputs:
+/**
+* ABC
+**/
 ```
