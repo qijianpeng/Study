@@ -1,0 +1,25 @@
+# Storm Spout与HDFS的结合
+在[Storm HDFS Integration](http://storm.apache.org/releases/1.1.0/storm-hdfs.html)
+上会看到这么一句话"Storm components for interacting with HDFS file systems"
+也就是说, Storm提供了用于与HDFS进行交互的组件.
+因此, 这里不需要对其进行额外的配置, 至于要利用其组件, 就可以实现Storm与HDFS的交互.
+
+虽然Storm在针对已经存在的大量数据处理上不太适合(比较适合实时数据流), 但总会有这样的需求,
+比如做实验需要一些带label的数据, 而这些数据都是人为处理好的.
+
+
+## 读数据
+```java
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+////////////////////////////////////
+FileSystem fs = FileSystem.get(URI.create("hdfs://prodserver"), new Configuration());
+String hdfspath = "/apps/storm/conf/config.json";
+Path path = new Path();
+if (fs.exists(path)) {
+   InputStreamReader reader = new InputStreamReader(fs.open(path));
+   // do stuff with the reader
+} else {
+   LOG.info("Does not exist {}", hdfspath);
+}
+```
