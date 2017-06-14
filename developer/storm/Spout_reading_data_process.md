@@ -46,7 +46,9 @@ builder.setSpout("spout", new RandomSentenceSpout(), 5);
 `RandomSentenceSpout` 调用`nextTuple`方法不断地产生数据流. 当产生数据流后要向topology发送, 要发送数据, 如何进行识别呢? 上文讲到了, 在emit时还要实现`OutputFieldsDeclarer`的`declareStream()`方法. 这个方法的调用过程是这样的:
 `TopologyBuilder.createTopology()` --> `componentCommon.getComponentCommon()` --> `component.declareOutputFields(outputFieldsGetter)` --> 'OutputFieldsDeclarer.declareOutputFields()'.
 
-现在就对上号了, Spout通过多重继承/implements `IComponent` 实现`declareOutputFields`方法, 然后在该方法中调用`OutputFieldsDeclarer`中的`declare`或`declareStream`方法, 之后由`topology`创建流的映射关系, 再由`emit`方法, 将数据发送到整个`topology`中去. 因此, `declare`方法是必须要实现的方法. `Topology`中的`fieldsGrouping`至关重要, 它建立了与`declare`方法中传入的`Field`对应. 而`emit`又与`declarer`对应, 这就形成了一个铰链.  `nextTuple`中调用`emit`方法, 实现了数据到`topology`中的映射.
+现在就对上号了, Spout通过多重继承/implements `IComponent` 实现`declareOutputFields`方法, 然后在该方法中调用`OutputFieldsDeclarer`中的`declare`或`declareStream`方法, 之后由`topology`创建流的映射关系, 再由`emit`方法, 将数据发送到整个`topology`中去. 因此, `declare`方法是必须要实现的方法. `Topology`中的`fieldsGrouping`至关重要, 它建立了与`declare`方法中传入的`Field`对应. 而`emit`又与`declarer`对应, 这就形成了一个铰链.  `nextTuple`中调用`emit`方法, 实现了数据到`topology`中的映射. 最后交由`Bolt`的`execute`方法对接收到的每个`tuple`进行处理.
+
+Some useful links: [Lifecycle of a topology](http://storm.apache.org/releases/1.1.0/Lifecycle-of-a-topology.html)
 
 # Spout读取数据的方式
-Storm读取数据可以与很多平台进行整合. 比如HDFS. 后续将结合HDFS进行数据的读取.
+Storm读取数据可以与很多平台进行整合. 比如[HDFS](https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsUserGuide.html). 后续将结合HDFS进行数据的读取.
