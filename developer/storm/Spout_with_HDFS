@@ -9,12 +9,25 @@
 
 
 ## 读数据
+由于是在平时学习工作中进行的任务, 为了方便, 存储在HDFS上的文件路径统一为`/storm/data/`
+[安装Hadoop参考](http://hadoop.apache.org/docs/current/).
+```bash
+sbin/start-dfs.sh #启动hdfs
+bin/hdfs dfs -mkdir -p /storm/data #创建/storm/data目录
+bin/hdfs dfs -ls -R / #查看目录是否创建成功
+bin/hdfs dfs -put ~/Downloads/10g_50obj_50t_sorted.txt /storm/data #上传文件到hdfs
+
+```
+这里得到了路径`hdfs://localhost/storm/data`
+
+### 读取数据代码
+
 ```java
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 ////////////////////////////////////
-FileSystem fs = FileSystem.get(URI.create("hdfs://prodserver"), new Configuration());
-String hdfspath = "/apps/storm/conf/config.json";
+FileSystem fs = FileSystem.get(URI.create("hdfs://localhost"), new Configuration());
+String hdfspath = "/storm/data/10g_50obj_50t_sorted.txt";
 Path path = new Path();
 if (fs.exists(path)) {
    InputStreamReader reader = new InputStreamReader(fs.open(path));
@@ -22,4 +35,87 @@ if (fs.exists(path)) {
 } else {
    LOG.info("Does not exist {}", hdfspath);
 }
+```
+由于这里要使用`spout`来集成, 幸运的是`storm`提供了
+`import org.apache.storm.hdfs.spout.HdfsSpout`这么一个类. 通过这个类, 可以对`hdfs`上
+的文件进行操作.
+
+那么, `HdfsSpout`是如何发送数据的呢?
+在`HdfsSpout`这个类的`nextTuple`方法中有至关重要的一行
+```java
+List<Object> tuple = reader.next();
+```
+也就是说, 通过`FileReader`的一个实例`reader`来对Hdfs上的文件进行读取, 通过`next()`方法, 将获得
+指定文件中的一行数据, 即, `next()`是按行读取的. `declareOutputFields`方法实现的是
+
+```java
+@Override
+public void declareOutputFields(OutputFieldsDeclarer declarer) {
+  if (outputStreamName!=null) {
+    declarer.declareStream(outputStreamName, outputFields);
+  } else {
+    declarer.declare(outputFields);
+  }
+}
+```
+
+### NOTES:
+  在[storm-hdfs](https://github.com/apache/storm/tree/master/external/storm-hdfs#hdfs-spout)中
+有这么一句话"Hdfs spout assumes that the files being made visible to it in the monitored directory are NOT actively being written to. "
+意思是说storm spout监视的hdfs文件夹是一直可见的, 如果在这个过程中有文件正在被写入, 是会出状况的.
+具体的解决方法为:
+>  Only after a file is completely written should it be made visible to the spout.
+This can be achieved by either writing the files out to another directory and
+once completely written, move it to the monitored directory.
+Alternatively the file can be created with a '.ignore' suffix in the monitored
+directory and after data is completely written, rename it without the suffix.
+File names with a '.ignore' suffix are ignored by the spout.
+
+
+
+
+
+
+# Trouble shooting
+## No FileSystem for scheme: hdfs
+你可能会遇到`No FileSystem for scheme: hdfs`这样的错误, 这是采用Maven构建项目,
+将包含有相同`org.apache.hadoop.fs.FileSystem`的`Jar`包打包成了一个, 造成了冲突.
+```java
+java.io.IOException: No FileSystem for scheme: hdfs
+  at org.apache.hadoop.fs.FileSystem.getFileSystemClass(FileSystem.java:2644)
+  at org.apache.hadoop.fs.FileSystem.createFileSystem(FileSystem.java:2651)
+  at org.apache.hadoop.fs.FileSystem.access$200(FileSystem.java:92)
+  at org.apache.hadoop.fs.FileSystem$Cache.getInternal(FileSystem.java:2687)
+  at org.apache.hadoop.fs.FileSystem$Cache.get(FileSystem.java:2669)
+  at org.apache.hadoop.fs.FileSystem.get(FileSystem.java:371)
+```
+## 解决方案
+在maven配置文件pom.xml的`<plugins>`范围内加入如下内容:
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-shade-plugin</artifactId>
+    <version>1.4</version>
+    <configuration>
+        <createDependencyReducedPom>true</createDependencyReducedPom>
+    </configuration>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>shade</goal>
+            </goals>
+            <configuration>
+                <transformers>
+                    <transformer
+                            implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                    <transformer
+                            implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                        <mainClass></mainClass>
+                    </transformer>
+                </transformers>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
 ```
