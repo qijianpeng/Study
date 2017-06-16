@@ -19,6 +19,8 @@ bin/hdfs dfs -put ~/Downloads/10g_50obj_50t_sorted.txt /storm/data #上传文件
 
 ```
 这里得到了路径`hdfs://localhost/storm/data`
+**这里额外多说一句**, 在`core-site.xml`文件中一定要把`fs.defaultFS`路径配置正确,
+因为`<value>hdfs://localhost:9000/</value>`最后面的一个`/`忘记填了, 找了好长时间才找到错误.
 
 ### 读取数据代码
 
@@ -59,6 +61,65 @@ public void declareOutputFields(OutputFieldsDeclarer declarer) {
 }
 ```
 
+下面上HDFS文件读写操作的代码:
+```java
+public static void main(String[] args) throws TException, InterruptedException {
+        // 1 - parameters
+        String hdfsUri = "hdfs://localhost:9000";
+        String sourceDir = "/storm/data/";
+        String archiveDir = "/storm/done/";
+        String badFilesDir = "/storm/badfiles/";
+        // 2 - create spout and bolt
+        HdfsSpout hdfsSpout = new HdfsSpout().withOutputFields(TextFileReader.defaultFields)
+                                            .setHdfsUri(hdfsUri)
+                                            .setArchiveDir(archiveDir)
+                                            .setSourceDir(sourceDir)
+                                            .setBadFilesDir(badFilesDir)
+                                            .setReaderType(Configs.TEXT);//通过阅读源码发现, 这一行是不能少的
+
+        RecordFormat format = new DelimitedRecordFormat()
+                                .withFieldDelimiter("\t");
+        FileNameFormat fileNameFormat = new DefaultFileNameFormat().withPath("/storm/output/");
+        SyncPolicy syncPolicy = new CountSyncPolicy(1000);
+        FileRotationPolicy  fileRotationPolicy = new FileSizeRotationPolicy(5.0f, FileSizeRotationPolicy.Units.MB);
+        HdfsBolt hdfsBolt = new HdfsBolt().withFsUrl(hdfsUri)
+                                        .withRecordFormat(format)
+                                        .withRotationPolicy(fileRotationPolicy)
+                                        .withSyncPolicy(syncPolicy)
+                                        .withFileNameFormat(fileNameFormat)
+                                        ;
+
+        // 3 - create and configure topology
+        Config conf = new Config();
+        /*conf.setNumWorkers(1);
+        conf.setNumAckers(1);
+        conf.setMaxTaskParallelism(1);
+        conf.setDebug(true);
+        conf.registerMetricsConsumer(LoggingMetricsConsumer.class);*/
+
+        TopologyBuilder topologyBuilder = new TopologyBuilder();
+        topologyBuilder.setSpout("hdfsspout", hdfsSpout, 1);
+        topologyBuilder.setBolt("hdfsbolt", hdfsBolt, 1)
+                        .shuffleGrouping("hdfsspout");
+        // 4 - submit topology, wait for a few min and terminate it
+       // Map clusterConf = Utils.readStormConfig();
+        String topologyName = "outlierTopology";
+
+        LocalCluster localCluster = new LocalCluster();
+
+        StormTopology stormTopology =  topologyBuilder.createTopology();
+        stormTopology.validate();
+        localCluster.submitTopology(topologyName,conf, stormTopology);
+       // StormSubmitter.submitTopologyWithProgressBar(topologyName, config, topologyBuilder.createTopology());
+       //  Nimbus.Iface client = NimbusClient.getConfiguredClient(clusterConf).getClient();
+
+        Utils.sleep(20000);
+        localCluster.shutdown();
+        //kill(client, topologyName);
+    }
+```
+
+
 ### NOTES:
   在[storm-hdfs](https://github.com/apache/storm/tree/master/external/storm-hdfs#hdfs-spout)中
 有这么一句话"Hdfs spout assumes that the files being made visible to it in the monitored directory are NOT actively being written to. "
@@ -89,7 +150,7 @@ java.io.IOException: No FileSystem for scheme: hdfs
   at org.apache.hadoop.fs.FileSystem$Cache.get(FileSystem.java:2669)
   at org.apache.hadoop.fs.FileSystem.get(FileSystem.java:371)
 ```
-## 解决方案
+### 解决方案
 在maven配置文件pom.xml的`<plugins>`范围内加入如下内容:
 ```xml
 <plugin>
@@ -118,4 +179,36 @@ java.io.IOException: No FileSystem for scheme: hdfs
         </execution>
     </executions>
 </plugin>
+```
+
+## ERROR org.apache.storm.shade.org.apache.zookeeper.server.NIOServerCnxnFactory - Thread Thread[main,5,main] died
+在使用`LocalCluster`提交任务时出现错误如下:
+```java
+ERROR org.apache.storm.shade.org.apache.zookeeper.server.NIOServerCnxnFactory - Thread Thread[main,5,main] died
+org.apache.storm.generated.InvalidTopologyException: null
+	at org.apache.storm.daemon.common$validate_structure_BANG_.invoke(common.clj:185) ~[storm-core-1.1.0.jar:1.1.0]
+	at org.apache.storm.daemon.common$system_topology_BANG_.invoke(common.clj:378) ~[storm-core-1.1.0.jar:1.1.0]
+	at org.apache.storm.daemon.nimbus$mk_reified_nimbus$reify__10782.submitTopologyWithOpts(nimbus.clj:1694) ~[storm-core-1.1.0.jar:1.1.0]
+	at org.apache.storm.daemon.nimbus$mk_reified_nimbus$reify__10782.submitTopology(nimbus.clj:1726) ~[storm-core-1.1.0.jar:1.1.0]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_131]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_131]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_131]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_131]
+	at clojure.lang.Reflector.invokeMatchingMethod(Reflector.java:93) ~[clojure-1.7.0.jar:?]
+	at clojure.lang.Reflector.invokeInstanceMethod(Reflector.java:28) ~[clojure-1.7.0.jar:?]
+	at org.apache.storm.testing$submit_local_topology.invoke(testing.clj:310) ~[storm-core-1.1.0.jar:1.1.0]
+	at org.apache.storm.LocalCluster$_submitTopology.invoke(LocalCluster.clj:49) ~[storm-core-1.1.0.jar:1.1.0]
+	at org.apache.storm.LocalCluster.submitTopology(Unknown Source) ~[storm-core-1.1.0.jar:1.1.0]
+	at storm.StreamOutlierTopology.main(StreamOutlierTopology.java:69) ~[classes/:?]
+```
+### 解决方案
+官网的`spout`可能是忽略了一点, 我的hdfs上存储的是text文件, 因此要额外的设置文件的类型.
+`.setReaderType(Configs.TEXT)`.
+```java
+HdfsSpout hdfsSpout = new HdfsSpout().withOutputFields("hdfsspout")
+                                            .setHdfsUri(hdfsUri)
+                                            .setArchiveDir(archiveDir)
+                                            .setSourceDir(sourceDir)
+                                            .setBadFilesDir(badFilesDir)
+                                            .setReaderType(Configs.TEXT);
 ```
