@@ -7,10 +7,30 @@
 4. datasets.
 5. results of experiments.
 6. summary.
+
 # Intorduction
  - ‘distance-based’ outlier detection models.
  - effectiveness receives far less attention than efficiency.
    - 难于描述异常检测方法得到的异常.(导致不同方法在正确性上进行对比不太科学)
    - 缺乏对结果进行验证的方法.
    - 数据集缺少标签.
+
 # Outlier detection methods
+1.  a fixed distance threshold
+2. assign to each object a score reflecting its ‘outlierness’
+  1. kth-nearest neighbor
+  2. k nearest neighbors
+3. Local Outlier Factor (LOF)
+  ![  LOF Outlier](figures/Lof_sample.jpg)
+  - reference set
+    - all --> global
+    - smaller --> local
+
+## Methods
+- ‘global’ methods
+  - kNN
+  - kNN-weight (kNNW)
+  - ODIN (Outlier Detection using Indegree Number)
+- 'local' methods
+  - LOF (Local Outlier Factor)
+  - SimplifiedLOF 
