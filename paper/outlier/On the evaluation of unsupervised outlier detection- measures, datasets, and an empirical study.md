@@ -35,7 +35,7 @@
 - 'local' methods
   - LOF (Local Outlier Factor)
   - SimplifiedLOF
-
+  - ...
 # Evaluation measures
 - P@n (Precision at $n$)
   - it is unclear how to fairly choose the parameter n.
