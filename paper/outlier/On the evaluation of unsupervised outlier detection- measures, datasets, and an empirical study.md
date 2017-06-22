@@ -39,8 +39,10 @@
 # Evaluation measures
 - P@n (Precision at $n$)
   - it is unclear how to fairly choose the parameter n.
-- Adjusted P@n = $\frac{P@n - {|O|}/{N}} {1 - {|O|}/{N}}$
-- average precision AP=$\frac{1}{|O|}\sum_{o \in O}{P@rank(o)}$
+- Adjusted P@n
+![  ](figures/AdjustedPn.jpg)
+- average precision 
+  ![](figures/AP.jpg)
 - Adjusted AP
 - Receiver Operating Characteristic (ROC)
     - The curve is obtained by plotting for all possible choices of n the true positive rate versus the false positive rate.
