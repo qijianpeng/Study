@@ -21,10 +21,11 @@
   1. kth-nearest neighbor
   2. k nearest neighbors
 3. Local Outlier Factor (LOF)
-  ![  LOF Outlier](figures/Lof_sample.jpg)
   - reference set
     - all --> global
     - smaller --> local
+  - ![  LOF Outlier](figures/Lof_sample.jpg)
+
 
 ## Methods
 - ‘global’ methods
@@ -33,4 +34,15 @@
   - ODIN (Outlier Detection using Indegree Number)
 - 'local' methods
   - LOF (Local Outlier Factor)
-  - SimplifiedLOF 
+  - SimplifiedLOF
+
+# Evaluation measures
+- P@n (Precision at $n$)
+  - it is unclear how to fairly choose the parameter n.
+- Adjusted P@n = $\frac{P@n - {|O|}/{N}} {1 - {|O|}/{N}}$
+- average precision AP=$\frac{1}{|O|}\sum_{o \in O}{P@rank(o)}$
+- Adjusted AP
+- Receiver Operating Characteristic (ROC)
+    - The curve is obtained by plotting for all possible choices of n the true positive rate versus the false positive rate.
+    -  a perfect ranking (in which all outliers are ranked ahead of any inliers) would result in a curve consisting of a vertical line at false positive rate 0 and a horizontal line at the top of the plot.
+    - ![ROC sample](figures/ROC_sample.png)
