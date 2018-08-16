@@ -4,14 +4,6 @@
 
 source ./os_match.sh
 OS=os_match
-COMMANDS=''
-#if [[ "$OS" -eq "linux" ]]; then
-#    # ...
-#    echo "linx"
-if [[ "$OS" -eq "mac" ]]; then
-    # Mac OSX
-    COMMANDS='env LC_CTYPE=C'
-fi
 
 random_str(){
   length=$1
@@ -21,7 +13,7 @@ random_str(){
     cat /dev/urandom |tr -dc 'a-zA-Z0-9' | fold -w $length | head -n 1
   fi
 }
-random_str 5
+
 random_number(){
   lower=$1
   higher=$2

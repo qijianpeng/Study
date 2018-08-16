@@ -19,20 +19,14 @@ import java.util.Deque;
 public class SemanticParser implements Serializable {
     private static final long serialVersionUID = 1L;
     Expr expr = new Expr();
-    Term term = null;
-    Factor factor = null;
+    Term term = new Term();
+    Factor factor = new Factor();
+    {
+        expr.setTermRule(term);
+        term.setFactorRule(factor);
+        factor.setExpRule(expr);
+    }
     public Result execute(Deque<Token> tokens) throws SemanticException {
-        if (null == expr.getTermRule()){
-            term = new Term();
-            expr.setTermRule(term);
-        }
-        if (null == term.getFactorRule()){
-            factor = new Factor();
-            term.setFactorRule(factor);
-        }
-        if (null == factor.getExpRule()){
-            factor.setExpRule(expr);
-        }
         Expression result = expr.execute(tokens);
         if (null == result || !tokens.isEmpty()){
             return new Result(Integer.MIN_VALUE, true);

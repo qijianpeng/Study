@@ -21,7 +21,6 @@ public class CalculatorImpl extends Calculator implements Serializable {
 
     @Override
     public Result calculate(String exp) {
-
         try {
             Deque<Token> tokens = TokenParser.tokenize(exp);
             Result result = semanticParser.execute(tokens);
@@ -33,8 +32,5 @@ public class CalculatorImpl extends Calculator implements Serializable {
         }catch (NullPointerException nullPointer){
             return new Result(Integer.MIN_VALUE, true);
         }
-
     }
-
-
 }
