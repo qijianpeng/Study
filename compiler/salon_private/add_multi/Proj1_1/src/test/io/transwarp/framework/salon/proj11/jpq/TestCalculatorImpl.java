@@ -2,6 +2,7 @@ package io.transwarp.framework.salon.proj11.jpq;
 
 import io.transwarp.framework.salon.proj11.Calculator;
 import io.transwarp.framework.salon.proj11.Result;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
@@ -12,16 +13,33 @@ import java.io.*;
  */
 public class TestCalculatorImpl {
 
+    Calculator calculator;
+    @Before
+    public void setUp(){
+        calculator = new CalculatorImpl();
+    }
     @Test
-    public void testCalculator(){
+    public void testCalculatorHuge(){
         try {
-            Calculator calculator = new CalculatorImpl();
             File file = new File("./data/huge.txt");
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String exp = reader.readLine();
-            System.out.println(exp);
             Result res = calculator.calculate(exp);
             System.out.println(res);
+        }catch (Exception e){
+
+        }
+    }
+    @Test
+    public void testCalculatorSimple(){
+        try {
+            File file = new File("./data/simple.txt");
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String exp;
+            while ((exp  = reader.readLine()) != null) {
+                Result res = calculator.calculate(exp);
+                System.out.println(res);
+            }
         }catch (Exception e){
 
         }

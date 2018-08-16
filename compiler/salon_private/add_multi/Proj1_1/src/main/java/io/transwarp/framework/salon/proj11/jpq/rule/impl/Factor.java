@@ -33,6 +33,7 @@ public class Factor implements Rule {
     @Override
     public Expression execute(Deque<Token> tokensQueue)  throws SemanticException {
         //TOK_EOF
+        int lpCount = 0;
         Token token = tokensQueue.peek();
         //TOK_NUMBER
         if (token instanceof NumberToken){
@@ -40,19 +41,27 @@ public class Factor implements Rule {
             return new Digit(((NumberToken) token).getNumber());
         }else if (token instanceof LpToken){ //TOK_LP EXP TOK_RP
             //TOK_LP
+            lpCount++;// '(' ++
             tokensQueue.pop();
+            while (tokensQueue.peek() instanceof LpToken){
+                lpCount ++;
+                tokensQueue.pop();
+            }
             Expression expression = expRule.execute(tokensQueue);//EXP
             if (tokensQueue.isEmpty()) {
                 throw new SemanticException("Missing ')'.");
             }
-            Token rp = tokensQueue.peek();
-            if (rp instanceof RpToken) {//TOK_RP
+            while (tokensQueue.peek() instanceof RpToken) {//TOK_RP
                 tokensQueue.pop();
+                lpCount --;
+            }
+            if (lpCount == 0) {
                 return expression;
+            }else {
+                throw new SemanticException("Number of '(' and ')' not equal.");
             }
         }else {
             throw new SemanticException("Redundant operator after " +  tokensQueue.peek().toString());
         }
-        return null;
     }
 }
