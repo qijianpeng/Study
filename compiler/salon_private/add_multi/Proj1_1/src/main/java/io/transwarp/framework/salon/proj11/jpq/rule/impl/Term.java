@@ -17,7 +17,16 @@ import java.util.Deque;
  * TERM: FACTOR (TOK_MUL TERM)
  */
 public class Term implements Rule {
-    static Factor factorRule = new Factor();
+    Factor factorRule = null;
+
+    public Factor getFactorRule() {
+        return factorRule;
+    }
+
+    public void setFactorRule(Factor factorRule) {
+        this.factorRule = factorRule;
+    }
+
     @Override
     public Expression execute(Deque<Token> tokensQueue) throws SemanticException {
         TerminalExpression factor = (TerminalExpression)factorRule.execute(tokensQueue);

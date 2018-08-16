@@ -18,7 +18,13 @@ import java.util.Deque;
  * EXP: TERM (TOK_ADD EXP)*
  */
 public class Expr implements Rule {
-    static Term termRule = new Term();
+    Term termRule = null;
+    public void setTermRule(Term termRule){
+        this.termRule = termRule;
+    }
+    public Term getTermRule(){
+        return termRule;
+    }
     @Override
     public Expression execute(Deque<Token> tokensQueue) throws SemanticException {
         TerminalExpression term = (TerminalExpression) termRule.execute(tokensQueue);

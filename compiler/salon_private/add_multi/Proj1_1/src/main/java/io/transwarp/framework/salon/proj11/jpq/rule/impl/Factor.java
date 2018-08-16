@@ -20,7 +20,16 @@ import java.util.Deque;
  * //FACTOR: TOK_EOF | TOK_NUMBER | TOK_LP EXP TOKRP
  */
 public class Factor implements Rule {
-    static Expr expRule = new Expr();
+    Expr expRule = null;
+
+    public Expr getExpRule() {
+        return expRule;
+    }
+
+    public void setExpRule(Expr expRule) {
+        this.expRule = expRule;
+    }
+
     @Override
     public Expression execute(Deque<Token> tokensQueue)  throws SemanticException {
         //TOK_EOF
