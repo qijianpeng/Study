@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class RpToken extends Token implements Serializable {
     private static final long serialVersionUID = 1L;
-    public RpToken(int pos){
-        super(")", pos);
+    public RpToken(){
+        super(")");
     }
 }

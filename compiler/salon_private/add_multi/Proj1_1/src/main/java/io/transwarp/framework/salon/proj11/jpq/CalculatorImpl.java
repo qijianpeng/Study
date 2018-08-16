@@ -36,18 +36,5 @@ public class CalculatorImpl extends Calculator implements Serializable {
 
     }
 
-    public static void main(String[] args) {
-        Calculator calculator = new CalculatorImpl();
-        String[] exps = {
-                "01  ",
-                "01+02",
-        "(64 *   1   )   + 0*1",
-                "01+02",
-                "((1+1))"
-        };
-        for (String exp : exps) {
-            Result res = calculator.calculate(exp);
-            System.out.println(res);
-        }
-    }
+
 }

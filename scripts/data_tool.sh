@@ -3,7 +3,7 @@
 #
 
 source ./os_match.sh
-OS=${OS}
+OS=os_match
 COMMANDS=''
 #if [[ "$OS" -eq "linux" ]]; then
 #    # ...

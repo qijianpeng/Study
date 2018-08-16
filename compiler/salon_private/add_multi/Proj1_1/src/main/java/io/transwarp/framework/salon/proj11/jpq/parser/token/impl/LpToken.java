@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class LpToken extends Token implements Serializable {
     private static final long serialVersionUID = 1L;
-    public LpToken(int pos){
-        super("(", pos);
+    public LpToken(){
+        super("(");
     }
 }

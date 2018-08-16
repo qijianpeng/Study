@@ -30,11 +30,12 @@ public class TokenParser implements Serializable {
         StringCharacterIterator itr = new StringCharacterIterator(expression);
         for (char c = itr.first(); c != StringCharacterIterator.DONE; c = itr.next()){
             if (c =='(') {
-                tokens.offer(new LpToken(itr.getIndex()));
+                tokens.offer(new LpToken());
                 continue;
             }
             if (c == ')') {
-                tokens.offer(new RpToken(itr.getIndex()));
+                tokens.offer(new RpToken());
+                //((((((()
                 continue;
             }
             if(c == '-' && !(tokens.peekLast() instanceof NumberToken)){//negative number
@@ -44,7 +45,7 @@ public class TokenParser implements Serializable {
                 throw new TokenParseException("Token parse error, see position " + index);
              }
              if (c == '+'){
-                tokens.offer(new AddToken(itr.getIndex()));
+                tokens.offer(new AddToken());
                 continue;
              }
              if (c >= '0' && c <= '9' ) {
@@ -57,11 +58,11 @@ public class TokenParser implements Serializable {
                     throw new TokenParseException("Token parse error, illegal " +
                             "whitespace after number " + number + " position " + index);
                  }
-                tokens.offer(new NumberToken(number, index));
+                tokens.offer(new NumberToken(number));
                 continue;
              }
              if (c == '*') {
-                 tokens.offer(new MultiToken(itr.getIndex()));
+                 tokens.offer(new MultiToken());
                  continue;
              }
              if ( c == ' ' || c == '\t') {//valid whitespace

@@ -9,15 +9,10 @@ import java.io.Serializable;
 public abstract class Token implements Serializable {
     private static final long serialVersionUID = 1L;
     protected String val;
-    protected int pos;
     public Token(String val){
-        this(val, -1);
-    }
-    public Token(String val, int pos){
         this.val = val;
-        this.pos = pos;
     }
     public String toString(){
-        return "[" + this.val +", pos: " + this.pos +"]";
+        return "[" + this.val +"]";
     }
 }

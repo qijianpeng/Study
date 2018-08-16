@@ -12,8 +12,8 @@ import java.io.Serializable;
  */
 public class AddToken extends OperatorToken implements Serializable {
     private static final long serialVersionUID = 1L;
-    public AddToken(int pos){
-        super("+", pos);
+    public AddToken(){
+        super("+");
     }
 
     @Override

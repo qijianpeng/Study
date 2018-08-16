@@ -11,8 +11,8 @@ import java.io.Serializable;
 public abstract class OperatorToken extends Token implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public OperatorToken(String val, int pos) {
-        super(val, pos);
+    public OperatorToken(String val) {
+        super(val);
     }
 
     public abstract BinaryOperator getOperator();

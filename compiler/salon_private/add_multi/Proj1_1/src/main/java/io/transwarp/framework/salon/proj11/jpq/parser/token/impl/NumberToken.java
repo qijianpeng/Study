@@ -10,12 +10,12 @@ import java.io.Serializable;
  */
 public class NumberToken extends Token implements Serializable {
     private static final long serialVersionUID = 1L;
-    public NumberToken(String val, Integer pos){
-        super(val, pos);
+    public NumberToken(String val){
+        super(val);
     }
 
-    public NumberToken(Integer val, Integer pos){
-        this(val.toString(), pos);
+    public NumberToken(Integer val){
+        this(val.toString());
     }
     public Integer getNumber(){
         return Integer.valueOf(val);

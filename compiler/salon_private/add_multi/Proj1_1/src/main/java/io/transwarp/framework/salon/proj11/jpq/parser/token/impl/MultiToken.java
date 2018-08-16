@@ -12,8 +12,8 @@ import java.io.Serializable;
  */
 public class MultiToken extends OperatorToken implements Serializable {
     private static final long serialVersionUID = 1L;
-    public MultiToken(int pos){
-        super("*", pos);
+    public MultiToken(){
+        super("*");
     }
 
     @Override
