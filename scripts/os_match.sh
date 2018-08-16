@@ -5,14 +5,14 @@ red='\e[1;31m'
 endColor='\e[0m'
 datetime=$(date +%Y%m%d%H%M%S)
 
-lowercase(){
+function lowercase(){
 	echo "$1" | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
 }
 
 ####################################################################
 # Get System Info
 ####################################################################
-os_match(){
+function os_match(){
 	OS=`lowercase \`uname\``
 	KERNEL=`uname -r`
 	MACH=`uname -m`
@@ -66,10 +66,9 @@ os_match(){
 		fi
 
 	fi
+ echo ${OS}
 }
-
 os_match
-echo $OS
 #echo "OS: $OS"
 #echo "DIST: $DIST"
 #echo "PSUEDONAME: $PSUEDONAME"
