@@ -3,6 +3,8 @@ package io.transwarp.framework.salon.proj11.jpq;
 import io.transwarp.framework.salon.proj11.Calculator;
 import io.transwarp.framework.salon.proj11.Result;
 import io.transwarp.framework.salon.proj11.jpq.err.ErrorSets;
+import io.transwarp.framework.salon.proj11.jpq.err.SemanticException;
+import io.transwarp.framework.salon.proj11.jpq.err.TokenParseException;
 import io.transwarp.framework.salon.proj11.jpq.rule.SemanticParser;
 import io.transwarp.framework.salon.proj11.jpq.parser.token.Token;
 import io.transwarp.framework.salon.proj11.jpq.parser.TokenParser;
@@ -19,23 +21,35 @@ public class CalculatorImpl extends Calculator implements Serializable {
 
     @Override
     public Result calculate(String exp) {
-        ErrorSets.clear();
-        Deque<Token> tokens = TokenParser.tokenize(exp);
-        if (ErrorSets.hasError()) {
+
+        try {
+            //ErrorSets.clear();
+            Deque<Token> tokens = TokenParser.tokenize(exp);
+            /*if (ErrorSets.hasError()) {
+                return new Result(Integer.MIN_VALUE, true);
+            }*/
+            SemanticParser semanticParser = new SemanticParser();
+            Result result = semanticParser.execute(tokens);
+            /*if (ErrorSets.hasError()) {
+                result = new Result(Integer.MIN_VALUE, true);
+            }*/
+            return result;
+        }catch (SemanticException semanticException){
+            return new Result(Integer.MIN_VALUE, true);
+        }catch (TokenParseException tokenParseException){
+            return new Result(Integer.MIN_VALUE, true);
+        }catch (NullPointerException nullPointer){
             return new Result(Integer.MIN_VALUE, true);
         }
-        SemanticParser semanticParser = new SemanticParser();
-        Result result = semanticParser.execute(tokens);
-        if (ErrorSets.hasError()){
-            result = new Result(Integer.MIN_VALUE, true);
-        }
-        return result;
+
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         Calculator calculator = new CalculatorImpl();
         String[] exps = {
-        "(1+(22))*3"
+     //   "(64 *   1   )   + 0*1",
+                "01+02",
+                ""
         };
         for (String exp : exps) {
             System.out.println(exp);
@@ -43,9 +57,9 @@ public class CalculatorImpl extends Calculator implements Serializable {
             if (!res.hasCompileError()) {
                 System.out.println(res.getValue());
             } else {
-                ErrorSets.printErrors();
+                System.out.println("ERROR");;
             }
-            ErrorSets.clear();
+            //ErrorSets.clear();
         }
-    }
+    }*/
 }

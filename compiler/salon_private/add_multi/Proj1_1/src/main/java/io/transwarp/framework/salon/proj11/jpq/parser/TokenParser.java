@@ -22,8 +22,11 @@ public class TokenParser implements Serializable {
      * @param expression
      * @return
      */
-    public static Deque<Token> tokenize(String expression){
+    public static Deque<Token> tokenize(String expression) throws TokenParseException, NullPointerException{
         //1st in 1st out.
+        if ("".equals(expression) || null == expression){
+            throw new NullPointerException();
+        }
         Deque<Token> tokens = new ArrayDeque(expression.length());
         StringCharacterIterator itr = new StringCharacterIterator(expression);
         for (char c = itr.first(); c != StringCharacterIterator.DONE; c = itr.next()){
@@ -39,21 +42,23 @@ public class TokenParser implements Serializable {
                 int index = itr.getIndex();
                 itr.next();
                 int number = parseNumber(itr) * -1;
-                ErrorSets.putError(new TokenParseException("Illegal negative number : " +
-                        number + ", Position " + index));
-                continue;
+                /*ErrorSets.putError(new TokenParseException("Illegal negative number : " +
+                        number + ", Position " + index));*/
+                throw new TokenParseException("Token parse error, see position " + index);
              }
              if (c == '+'){
                 tokens.offer(new AddToken(itr.getIndex()));
                 continue;
              }
-             if (Character.isDigit(c)) {
+             if (c >= '0' && c <= '9' ) {
                 int index = itr.getIndex();
                 int number = parseNumber(itr);
                 if (tokens.peekLast() instanceof NumberToken){
                     //illegal whitespace
-                    ErrorSets.putError(new TokenParseException("Illegal whitespace : " +
-                            number + ", Position " + index));
+                    /*ErrorSets.putError(new TokenParseException("Illegal whitespace : " +
+                            number + ", Position " + index));*/
+                    throw new TokenParseException("Token parse error, illegal " +
+                            "whitespace after number " + number + " position " + index);
                  }
                 tokens.offer(new NumberToken(number, index));
                 continue;
@@ -62,11 +67,12 @@ public class TokenParser implements Serializable {
                  tokens.offer(new MultiToken(itr.getIndex()));
                  continue;
              }
-             if ( c == ' ') {//valid whitespace
+             if ( c == ' ' || c == '\t') {//valid whitespace
                  continue;
              }
              //illegal
-            ErrorSets.putError(new TokenParseException("Illegal value " + c + ", Position " + itr.getIndex()));
+            throw new TokenParseException("Unsupported charactor: " + c);
+            //ErrorSets.putError(new TokenParseException("Illegal value " + c + ", Position " + itr.getIndex()));
         }
         return tokens;
     }

@@ -22,7 +22,7 @@ import java.util.Deque;
 public class Factor implements Rule {
     static Expr expRule = new Expr();
     @Override
-    public Expression execute(Deque<Token> tokensQueue) {
+    public Expression execute(Deque<Token> tokensQueue)  throws SemanticException {
         //TOK_EOF
         Token token = tokensQueue.peek();
         //TOK_NUMBER
@@ -43,8 +43,9 @@ public class Factor implements Rule {
                 return expression;
             }
         }else {
-            ErrorSets.putError(new SemanticException("Redundant value after " + tokensQueue.peek().toString()));
-            return null;
+            throw new SemanticException("Redundant operator after " +  tokensQueue.peek().toString());
+           /* ErrorSets.putError(new SemanticException("Redundant value after " + tokensQueue.peek().toString()));
+            return null;*/
         }
         return null;
     }
