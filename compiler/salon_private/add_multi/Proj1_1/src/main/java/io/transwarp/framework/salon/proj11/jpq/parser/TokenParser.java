@@ -23,7 +23,6 @@ public class TokenParser implements Serializable {
      * @return
      */
     public static Deque<Token> tokenize(String expression) throws TokenParseException, NullPointerException{
-        //1st in 1st out.
         if ("".equals(expression) || null == expression){
             throw new NullPointerException();
         }
@@ -41,9 +40,7 @@ public class TokenParser implements Serializable {
             if(c == '-' && !(tokens.peekLast() instanceof NumberToken)){//negative number
                 int index = itr.getIndex();
                 itr.next();
-                int number = parseNumber(itr) * -1;
-                /*ErrorSets.putError(new TokenParseException("Illegal negative number : " +
-                        number + ", Position " + index));*/
+              //  int number = parseNumber(itr) * -1;
                 throw new TokenParseException("Token parse error, see position " + index);
              }
              if (c == '+'){

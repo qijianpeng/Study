@@ -1,5 +1,4 @@
 package io.transwarp.framework.salon.proj11.jpq;
-
 import io.transwarp.framework.salon.proj11.Calculator;
 import io.transwarp.framework.salon.proj11.Result;
 import io.transwarp.framework.salon.proj11.jpq.err.ErrorSets;
@@ -18,21 +17,14 @@ import java.util.Deque;
  */
 public class CalculatorImpl extends Calculator implements Serializable {
     private static final long serialVersionUID = 1L;
+    SemanticParser semanticParser = new SemanticParser();
 
     @Override
     public Result calculate(String exp) {
 
         try {
-            //ErrorSets.clear();
             Deque<Token> tokens = TokenParser.tokenize(exp);
-            /*if (ErrorSets.hasError()) {
-                return new Result(Integer.MIN_VALUE, true);
-            }*/
-            SemanticParser semanticParser = new SemanticParser();
             Result result = semanticParser.execute(tokens);
-            /*if (ErrorSets.hasError()) {
-                result = new Result(Integer.MIN_VALUE, true);
-            }*/
             return result;
         }catch (SemanticException semanticException){
             return new Result(Integer.MIN_VALUE, true);
@@ -47,19 +39,15 @@ public class CalculatorImpl extends Calculator implements Serializable {
     public static void main(String[] args) {
         Calculator calculator = new CalculatorImpl();
         String[] exps = {
+                "01  ",
+                "01+02",
         "(64 *   1   )   + 0*1",
                 "01+02",
-                ""
+                "((1+1))"
         };
         for (String exp : exps) {
-            //System.out.println(exp);
             Result res = calculator.calculate(exp);
-            if (!res.hasCompileError()) {
-                System.out.println(res.getValue());
-            } else {
-                System.out.println("ERROR");;
-            }
-            //ErrorSets.clear();
+            System.out.println(res);
         }
     }
 }

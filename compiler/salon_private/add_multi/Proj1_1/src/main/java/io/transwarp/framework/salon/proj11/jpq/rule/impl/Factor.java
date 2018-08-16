@@ -43,8 +43,7 @@ public class Factor implements Rule {
             tokensQueue.pop();
             Expression expression = expRule.execute(tokensQueue);//EXP
             if (tokensQueue.isEmpty()) {
-                ErrorSets.putError(new SemanticException("Missing ')'."));
-                return null;
+                throw new SemanticException("Missing ')'.");
             }
             Token rp = tokensQueue.peek();
             if (rp instanceof RpToken) {//TOK_RP
@@ -53,8 +52,6 @@ public class Factor implements Rule {
             }
         }else {
             throw new SemanticException("Redundant operator after " +  tokensQueue.peek().toString());
-           /* ErrorSets.putError(new SemanticException("Redundant value after " + tokensQueue.peek().toString()));
-            return null;*/
         }
         return null;
     }
