@@ -51,15 +51,15 @@ public class Factor implements Rule {
             if (tokensQueue.isEmpty()) {
                 throw new SemanticException("Missing ')'.");
             }
-            while (tokensQueue.peek() instanceof RpToken) {//TOK_RP
+            while ((tokensQueue.peek() instanceof RpToken) && lpCount != 0) {//TOK_RP
                 tokensQueue.pop();
                 lpCount --;
             }
-            if (lpCount == 0) {
-                return expression;
-            }else {
+            if (lpCount < 0) {
                 throw new SemanticException("Number of '(' and ')' not equal.");
             }
+
+            return expression;
         }else {
             throw new SemanticException("Redundant operator after " +  tokensQueue.peek().toString());
         }

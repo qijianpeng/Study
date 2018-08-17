@@ -44,4 +44,11 @@ public class TestCalculatorImpl {
 
         }
     }
+
+    @Test
+    public void testCalcuatorStright(){
+        String exp = "((((1))+1))";
+        Result res = calculator.calculate(exp);
+        System.out.println(res);
+    }
 }
