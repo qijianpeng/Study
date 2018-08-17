@@ -31,6 +31,13 @@ public class Term implements Rule {
     public Expression execute(Deque<Token> tokensQueue) throws SemanticException {
         TerminalExpression factor = (TerminalExpression)factorRule.execute(tokensQueue);
         while (null != factor && !tokensQueue.isEmpty()) {
+            if (Integer.valueOf(factor.getValue().toString()) == 0){
+                Token token = tokensQueue.peek();
+                if (token instanceof MultiToken) { //TOK_MUL TERM
+                    tokensQueue.pop();
+                    factorRule.skipFactor(tokensQueue);
+                }
+            }
             Token token = tokensQueue.peek();
             if (token instanceof MultiToken) { //TOK_MUL TERM
                 tokensQueue.pop();

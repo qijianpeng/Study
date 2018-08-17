@@ -64,4 +64,42 @@ public class Factor implements Rule {
             throw new SemanticException("Redundant operator after " +  tokensQueue.peek().toString());
         }
     }
+
+    /**
+     * fast skip
+     * @param tokensQueue
+     * @throws SemanticException
+     */
+    public void skipFactor(Deque<Token> tokensQueue) throws SemanticException{
+        //TOK_EOF
+        int lpCount = 0;
+        Token token = tokensQueue.peek();
+        //TOK_NUMBER
+        if (token instanceof NumberToken) {
+            tokensQueue.pop();
+        }else if (token instanceof LpToken){
+            //TOK_LP
+            lpCount++;// '(' ++
+            tokensQueue.pop();
+            while (tokensQueue.peek() instanceof LpToken){
+                lpCount ++;
+                tokensQueue.pop();
+            }
+            if (tokensQueue.isEmpty()) {
+                throw new SemanticException("Missing ')'.");
+            }
+            while(!(tokensQueue.peek() instanceof RpToken)){
+                tokensQueue.pop();
+            }
+            while (tokensQueue.peek() instanceof RpToken) {//TOK_RP
+                tokensQueue.pop();
+                lpCount --;
+            }
+            if (lpCount != 0) {
+                throw new SemanticException("Number of '(' and ')' not equal.");
+            }
+
+        }
+
+    }
 }
