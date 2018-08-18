@@ -2,3 +2,53 @@ developer/java/函数式编程/Java 8函数式编程.pdf
 *.iml
 target/
 .idea
+*.svn
+*.tar.gz
+target/
+build/
+
+
+# Compiled Source
+*.class
+
+# SVN files
+.svn
+
+# Packages
+#*.jar
+
+# Log Files
+*.log
+
+# Eclipse project files
+.classpath
+.project
+.settings
+
+# emacs backup
+*~
+
+# tmp files
+*.swp
+.cache
+
+# mac os file
+*.DS_Store
+
+# latex files
+paper.blg
+paper.bbl
+paper.aux
+
+# IntelliJ IDE files
+.idea
+*.iml
+
+# Test Reports
+TEST*.xml
+
+# Ensime files for emacs
+.ensime
+.ensime_lucene
+/eclipse_bin
+/.scala_dependencies
