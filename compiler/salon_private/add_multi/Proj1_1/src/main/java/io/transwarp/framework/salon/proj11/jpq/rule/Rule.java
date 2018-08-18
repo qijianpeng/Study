@@ -11,5 +11,5 @@ import java.util.Deque;
  * e: jianpeng.qi@transwarp.io
  */
 public interface Rule {
-    public Expression execute(Deque<Token> tokensQueue) throws SemanticException;
+    public int execute(Deque<Token> tokensQueue) throws SemanticException;
 }

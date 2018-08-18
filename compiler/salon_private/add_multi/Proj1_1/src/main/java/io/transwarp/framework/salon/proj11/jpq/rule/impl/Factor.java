@@ -31,75 +31,57 @@ public class Factor implements Rule {
     }
 
     @Override
-    public Expression execute(Deque<Token> tokensQueue)  throws SemanticException {
+    public int execute(Deque<Token> tokensQueue)  throws SemanticException {
         //TOK_EOF
         int lpCount = 0;
         Token token = tokensQueue.peek();
         //TOK_NUMBER
         if (token instanceof NumberToken){
             tokensQueue.pop();
-            return new Digit(((NumberToken) token).getNumber());
-        }else if (token instanceof LpToken){ //TOK_LP EXP TOK_RP
-            //TOK_LP
-            lpCount++;// '(' ++
+            return ((NumberToken) token).getNumber();
+        }
+        //TOK_LP EXP TOK_RP
+        //TOK_LP
+        if (tokensQueue.peek() instanceof LpToken){
             tokensQueue.pop();
-            while (tokensQueue.peek() instanceof LpToken){
-                lpCount ++;
-                tokensQueue.pop();
-            }
-            Expression expression = expRule.execute(tokensQueue);//EXP
-            if (tokensQueue.isEmpty()) {
-                throw new SemanticException("Missing ')'.");
-            }
-            while ((tokensQueue.peek() instanceof RpToken) && lpCount != 0) {//TOK_RP
-                tokensQueue.pop();
-                lpCount --;
-            }
-            if (lpCount < 0) {
-                throw new SemanticException("Number of '(' and ')' not equal.");
-            }
+        }
+        int expression = expRule.execute(tokensQueue);//EXP
 
+        if (tokensQueue.isEmpty()) {
+            throw new SemanticException("Missing ')'.");
+        }
+        if (tokensQueue.peek() instanceof RpToken) {
+            tokensQueue.pop();
             return expression;
         }else {
-            throw new SemanticException("Redundant operator after " +  tokensQueue.peek().toString());
+            throw new SemanticException("Missing ')'.");
         }
     }
 
-    /**
-     * fast skip
-     * @param tokensQueue
-     * @throws SemanticException
-     */
-    public void skipFactor(Deque<Token> tokensQueue) throws SemanticException{
+    //FACTOR: TOK_EOF | TOK_NUMBER | TOK_LP EXP TOKRP
+    public void fastSkipFactor(Deque<Token> tokensQueue) throws SemanticException{
         //TOK_EOF
-        int lpCount = 0;
         Token token = tokensQueue.peek();
         //TOK_NUMBER
         if (token instanceof NumberToken) {
             tokensQueue.pop();
-        }else if (token instanceof LpToken){
-            //TOK_LP
-            lpCount++;// '(' ++
-            tokensQueue.pop();
-            while (tokensQueue.peek() instanceof LpToken){
-                lpCount ++;
-                tokensQueue.pop();
-            }
-            if (tokensQueue.isEmpty()) {
-                throw new SemanticException("Missing ')'.");
-            }
-            while(!(tokensQueue.peek() instanceof RpToken)){
-                tokensQueue.pop();
-            }
-            while (tokensQueue.peek() instanceof RpToken) {//TOK_RP
-                tokensQueue.pop();
-                lpCount --;
-            }
-            if (lpCount != 0) {
-                throw new SemanticException("Number of '(' and ')' not equal.");
-            }
-
+            return;
         }
+        //TOK_LP EXP TOK_RP
+        //TOK_LP
+        if (tokensQueue.peek() instanceof LpToken){
+            tokensQueue.pop();
+        }
+        expRule.fastSkipExp(tokensQueue);//EXP
 
+        if (tokensQueue.isEmpty()) {
+            throw new SemanticException("Missing ')'.");
+        }
+        if (tokensQueue.peek() instanceof RpToken) {
+            tokensQueue.pop();
+            return;
+        }else {
+            throw new SemanticException("Missing ')'.");
+        }
     }
 }

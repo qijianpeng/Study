@@ -28,25 +28,37 @@ public class Term implements Rule {
     }
 
     @Override
-    public Expression execute(Deque<Token> tokensQueue) throws SemanticException {
-        TerminalExpression factor = (TerminalExpression)factorRule.execute(tokensQueue);
-        while (null != factor && !tokensQueue.isEmpty()) {
-            if (Integer.valueOf(factor.getValue().toString()) == 0){
-                Token token = tokensQueue.peek();
-                if (token instanceof MultiToken) { //TOK_MUL TERM
-                    tokensQueue.pop();
-                    factorRule.skipFactor(tokensQueue);
-                }
-            }
+    public int execute(Deque<Token> tokensQueue) throws SemanticException {
+        int factor = factorRule.execute(tokensQueue);
+        while (!tokensQueue.isEmpty()) {
             Token token = tokensQueue.peek();
-            if (token instanceof MultiToken) { //TOK_MUL TERM
+            if (factor == 0 && (token instanceof MultiToken)){//fast skip
+                 //TOK_MUL TERM
                 tokensQueue.pop();
-                TerminalExpression term = (TerminalExpression) execute(tokensQueue);
-                factor = (TerminalExpression) ((MultiToken) token).getOperator().execute(factor, term);
+                System.out.println("Fast skipping..");
+                fastSkipTerm(tokensQueue);
+            }else if (token instanceof MultiToken) { //TOK_MUL TERM
+                tokensQueue.pop();
+                int term = execute(tokensQueue);
+                factor *= term;
             }else {
                 break;
             }
         }
         return factor;
+    }
+
+    public void fastSkipTerm(Deque<Token> tokensQueue) throws SemanticException {//TERM: FACTOR (TOK_MUL TERM)
+        factorRule.fastSkipFactor(tokensQueue);
+        while (!tokensQueue.isEmpty()) {
+            Token token = tokensQueue.peek();
+            if (token instanceof MultiToken){//fast skip
+                //TOK_MUL TERM
+                tokensQueue.pop();
+                fastSkipTerm(tokensQueue);
+            }else {
+                break;
+            }
+        }
     }
 }

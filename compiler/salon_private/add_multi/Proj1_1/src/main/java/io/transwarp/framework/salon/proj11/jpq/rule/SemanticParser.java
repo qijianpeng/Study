@@ -27,10 +27,10 @@ public class SemanticParser implements Serializable {
         factor.setExpRule(expr);
     }
     public Result execute(Deque<Token> tokens) throws SemanticException {
-        Expression result = expr.execute(tokens);
-        if (null == result || !tokens.isEmpty()){
+        int result = expr.execute(tokens);
+        if (!tokens.isEmpty()){
             return new Result(Integer.MIN_VALUE, true);
         }
-        return new Result(Integer.valueOf(result.execute().toString()), false);
+        return new Result(result, false);
     }
 }

@@ -26,18 +26,31 @@ public class Expr implements Rule {
         return termRule;
     }
     @Override
-    public Expression execute(Deque<Token> tokensQueue) throws SemanticException {
-        TerminalExpression term = (TerminalExpression) termRule.execute(tokensQueue);
+    public int execute(Deque<Token> tokensQueue) throws SemanticException {
+        int term =  termRule.execute(tokensQueue);
         while ( !tokensQueue.isEmpty()) {//TOK_ADD EXP
             Token token = tokensQueue.peek();
             if (token instanceof AddToken) {
                 tokensQueue.pop();
-                Expression right = execute(tokensQueue);
-                term = (TerminalExpression) (((AddToken) token).getOperator()).execute(term, right);
+                int right = execute(tokensQueue);
+                term += right;
             }else{
                 break;
             }
         }
         return term;
+    }
+
+    public void fastSkipExp(Deque<Token> tokensQueue) throws SemanticException{
+        termRule.fastSkipTerm(tokensQueue);
+        while ( !tokensQueue.isEmpty()) {//TOK_ADD EXP
+            Token token = tokensQueue.peek();
+            if (token instanceof AddToken) {
+                tokensQueue.pop();
+                fastSkipExp(tokensQueue);
+            }else{
+                break;
+            }
+        }
     }
 }

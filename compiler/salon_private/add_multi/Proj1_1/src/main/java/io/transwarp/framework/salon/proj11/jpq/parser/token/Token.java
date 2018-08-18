@@ -8,11 +8,4 @@ import java.io.Serializable;
  */
 public abstract class Token implements Serializable {
     private static final long serialVersionUID = 1L;
-    protected String val;
-    public Token(String val){
-        this.val = val;
-    }
-    public String toString(){
-        return "[" + this.val +"]";
-    }
 }

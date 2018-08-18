@@ -47,8 +47,25 @@ public class TestCalculatorImpl {
 
     @Test
     public void testCalcuatorStright(){
-        String exp = "((((1))+1))";
+        String exp = "(71+(((((21)+ 0   *(21)+ 0)   *1   )+ 0    *    1      *(((21)+ 0   *(21)+ 0)   *1   )+ 0    *    1  *  (((21)+ 0   *(21)+ 0)   *1   )+ 0    *    1      *(((21)+ 0   *(21)+ 0)   *1   )+ 0    *    1  )  *1   + 0*(36)+ 0*   1 )    *   1 + 0)";
+
+
         Result res = calculator.calculate(exp);
         System.out.println(res);
+    }
+
+    @Test
+    public void testError(){
+        try {
+            File file = new File("./data/error.txt");
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String exp;
+            while ((exp  = reader.readLine()) != null) {
+                Result res = calculator.calculate(exp);
+                System.out.println(res);
+            }
+        }catch (Exception e){
+
+        }
     }
 }
