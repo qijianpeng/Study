@@ -20,4 +20,8 @@ public class NumberToken extends Token implements Serializable {
     }
 
 
+    @Override
+    public String toString() {
+        return ""+val;
+    }
 }

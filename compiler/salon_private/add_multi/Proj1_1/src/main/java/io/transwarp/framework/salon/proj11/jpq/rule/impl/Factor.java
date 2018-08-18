@@ -11,6 +11,7 @@ import io.transwarp.framework.salon.proj11.jpq.parser.token.impl.RpToken;
 import io.transwarp.framework.salon.proj11.jpq.rule.Rule;
 
 import java.util.Deque;
+import java.util.Stack;
 
 /**
  * Created by jianpeng.qi on 18-8-13.
@@ -61,14 +62,15 @@ public class Factor implements Rule {
     //FACTOR: TOK_EOF | TOK_NUMBER | TOK_LP EXP TOKRP
     public void fastSkipFactor(Deque<Token> tokensQueue) throws SemanticException{
         //TOK_EOF
-        Token token = tokensQueue.peek();
+        //Token token = tokensQueue.peek();
         //TOK_NUMBER
-        if (token instanceof NumberToken) {
+        if (tokensQueue.peek() instanceof NumberToken) {
             tokensQueue.pop();
             return;
         }
         //TOK_LP EXP TOK_RP
-        //TOK_LP
+        fastSkipLpExpRp(tokensQueue);
+        /*//TOK_LP
         if (tokensQueue.peek() instanceof LpToken){
             tokensQueue.pop();
         }
@@ -82,6 +84,33 @@ public class Factor implements Rule {
             return;
         }else {
             throw new SemanticException("Missing ')'.");
-        }
+        }*/
+    }
+
+    static Byte LP = (byte) -1;
+    static Byte RP = (byte) 1;
+
+    public void fastSkipLpExpRp(Deque<Token> tokensQueue) throws SemanticException{
+        if(tokensQueue.peek() instanceof LpToken){
+            Stack<Byte> stack = new Stack<>();
+            tokensQueue.pop();
+            stack.push(LP);
+            while (!stack.empty()){
+                if (tokensQueue.peek() instanceof LpToken){
+                    stack.push(LP);
+                }else if (tokensQueue.peek() instanceof RpToken){
+                    if (!stack.empty() && stack.peek().equals(LP))stack.pop();
+                }
+                //others like '+', '#', '*'
+                tokensQueue.pop();
+                if (tokensQueue.isEmpty() && !stack.empty()){
+                    throw new SemanticException("Missing ')'");
+                }
+                /*//This step should belong to semantic analyze.
+                if (stack.empty() && (tokensQueue.peek() instanceof RpToken)){
+                    throw new SemanticException("Missing '('");
+                }*/
+            }
+        }else return;
     }
 }

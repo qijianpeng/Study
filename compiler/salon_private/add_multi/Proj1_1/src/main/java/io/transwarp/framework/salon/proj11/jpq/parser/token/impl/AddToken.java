@@ -20,4 +20,9 @@ public class AddToken extends OperatorToken implements Serializable {
     public BinaryOperator getOperator() {
         return new AddOperator();
     }
+
+    @Override
+    public String toString() {
+        return "+";
+    }
 }

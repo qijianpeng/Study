@@ -41,6 +41,7 @@ public class Expr implements Rule {
         return term;
     }
 
+
     public void fastSkipExp(Deque<Token> tokensQueue) throws SemanticException{
         termRule.fastSkipTerm(tokensQueue);
         while ( !tokensQueue.isEmpty()) {//TOK_ADD EXP

@@ -20,4 +20,9 @@ public class MultiToken extends OperatorToken implements Serializable {
     public BinaryOperator getOperator() {
         return new MultiOperator();
     }
+
+    @Override
+    public String toString() {
+        return "*";
+    }
 }

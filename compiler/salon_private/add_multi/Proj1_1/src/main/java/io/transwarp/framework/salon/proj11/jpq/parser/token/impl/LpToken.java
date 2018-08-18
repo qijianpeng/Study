@@ -20,4 +20,9 @@ public class LpToken extends OperatorToken implements Serializable {
     public BinaryOperator getOperator() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public String toString() {
+        return "(";
+    }
 }

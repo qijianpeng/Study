@@ -35,7 +35,7 @@ public class Term implements Rule {
             if (factor == 0 && (token instanceof MultiToken)){//fast skip
                  //TOK_MUL TERM
                 tokensQueue.pop();
-                System.out.println("Fast skipping..");
+                //System.out.println("Fast skipping..");
                 fastSkipTerm(tokensQueue);
             }else if (token instanceof MultiToken) { //TOK_MUL TERM
                 tokensQueue.pop();
