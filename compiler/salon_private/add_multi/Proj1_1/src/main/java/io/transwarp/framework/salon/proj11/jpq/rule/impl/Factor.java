@@ -10,6 +10,7 @@ import io.transwarp.framework.salon.proj11.jpq.parser.token.impl.NumberToken;
 import io.transwarp.framework.salon.proj11.jpq.parser.token.impl.RpToken;
 import io.transwarp.framework.salon.proj11.jpq.rule.Rule;
 
+import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Stack;
 
@@ -96,11 +97,7 @@ public class Factor implements Rule {
             tokensQueue.pop();
             stack.push(LP);
             while (!stack.empty()){
-                if (tokensQueue.peek() instanceof LpToken){
-                    stack.push(LP);
-                }else if (tokensQueue.peek() instanceof RpToken){
-                    if (!stack.empty() && stack.peek().equals(LP))stack.pop();
-                }
+                matchP(stack, tokensQueue.peek());
                 //others like '+', '#', '*'
                 tokensQueue.pop();
                 if (tokensQueue.isEmpty() && !stack.empty()){
@@ -112,5 +109,49 @@ public class Factor implements Rule {
                 }*/
             }
         }else return;
+    }
+
+    private void matchP(Stack<Byte> stack, Token token){
+        if (token instanceof LpToken){
+            stack.push(LP);
+        }else if (token instanceof RpToken){
+            if (!stack.empty() && stack.peek().equals(LP))stack.pop();
+        }
+    }
+
+    /**
+     * 提取以'('开头的最外层'(EXPR)'中的EXPR。
+     *
+     * (1+2) --> 1+2
+     * ((1+2)) --> (1+2)
+     * (1+2)+3 --> 1+2
+     * 1+2+(3+4) --> NULL/""
+     *
+     * @param tokensQueue
+     * @return
+     * @throws SemanticException
+     */
+    public Deque<Token> extractExpOfLpExpRp(Deque<Token> tokensQueue) throws SemanticException{
+        Deque<Token> deque = null;
+        if(tokensQueue.peek() instanceof LpToken){
+            deque = new ArrayDeque();
+            Stack<Byte> stack = new Stack<>();
+            tokensQueue.pop();
+            stack.push(LP);
+            while (!stack.empty()){
+                matchP(stack, tokensQueue.peek());
+                //others like '+', '#', '*'
+                deque.add(tokensQueue.pop());
+                if (tokensQueue.isEmpty() && !stack.empty()){
+                    throw new SemanticException("Missing ')'");
+                }
+                /*//This step should belong to semantic analyze.
+                if (stack.empty() && (tokensQueue.peek() instanceof RpToken)){
+                    throw new SemanticException("Missing '('");
+                }*/
+            }
+            deque.pollLast();//pop ')'
+        }
+        return deque;
     }
 }

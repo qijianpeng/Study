@@ -38,8 +38,15 @@ public class TestFastSkip implements Serializable {
     }
 
 
+    @Test
+    public void testExtractExp(){
+        assert fastExtractExpr("(1+2)+2").equals("1+2");
+        assert fastExtractExpr("1+(2)+2").equals("");
+        assert fastExtractExpr("((1+2+2))").equals("(1+2+2)");
+        assert fastExtractExpr("(1+(2)+2)").equals("1+2+2");//'(2)' --> '2' on token parser
+    }
 
-    public String fastSkipResultsStr(String expr){
+    private String fastSkipResultsStr(String expr){
         Deque<Token> tokens = null;
         try {
             tokens = TokenParser.tokenize(expr);
@@ -49,7 +56,20 @@ public class TestFastSkip implements Serializable {
             return e.getMessage();
         }
     }
+
+    private String fastExtractExpr(String expr){
+        Deque<Token> tokens = null;
+        try {
+            tokens = TokenParser.tokenize(expr);
+            tokens = factor.extractExpOfLpExpRp(tokens);
+            return queueToString(tokens);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
     private String queueToString(Deque deque){
+        if (null == deque)return "";
         StringBuilder sb = new StringBuilder();
         for (Object obj : deque){
             sb.append(obj.toString());
