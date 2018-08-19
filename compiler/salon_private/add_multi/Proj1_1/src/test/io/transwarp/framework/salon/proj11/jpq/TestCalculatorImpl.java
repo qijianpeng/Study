@@ -4,6 +4,7 @@ import io.transwarp.framework.salon.proj11.Calculator;
 import io.transwarp.framework.salon.proj11.Result;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.*;
 
@@ -19,6 +20,7 @@ public class TestCalculatorImpl {
         calculator = new CalculatorImpl();
     }
     @Test
+    @Category(Ensure.class)
     public void testCalculatorHuge(){
         try {
             File file = new File("./data/huge.txt");
@@ -27,10 +29,11 @@ public class TestCalculatorImpl {
             Result res = calculator.calculate(exp);
             System.out.println(res);
         }catch (Exception e){
-
+            System.out.println(e.getMessage());
         }
     }
     @Test
+    @Category(Ensure.class)
     public void testCalculatorSimple(){
         try {
             File file = new File("./data/simple.txt");

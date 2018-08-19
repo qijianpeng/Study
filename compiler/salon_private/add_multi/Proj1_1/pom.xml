@@ -34,6 +34,7 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -59,6 +60,18 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.0</version>
+                <configuration>
+                    <groups>io.transwarp.framework.salon.proj11.jpq.Ensure</groups>
+                    <!--<includes>
+                        <include>io.transwarp.framework.salon.proj11.jpq.TestCalculatorImpl</include>
+                    </includes>-->
+                    <argLine>-Xss128m -Xms128m</argLine>
+            </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

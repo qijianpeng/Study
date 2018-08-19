@@ -33,8 +33,8 @@ public class TokenParser implements Serializable {
                 tokens.offer(new LpToken());
                 continue;
             }
-            if (c == ')') {//(#) --> #
-                if (tokens.size() > 2 && (tokens.peekLast() instanceof NumberToken)){
+            if (c == ')') {//(#)
+                if (tokens.size() >= 2 && (tokens.peekLast() instanceof NumberToken)){
                     NumberToken number = (NumberToken) tokens.pollLast();
                     if (tokens.peekLast() instanceof LpToken){
                         tokens.pollLast();// poll last '('

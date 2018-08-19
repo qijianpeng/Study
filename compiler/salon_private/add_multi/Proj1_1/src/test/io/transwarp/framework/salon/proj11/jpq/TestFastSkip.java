@@ -51,7 +51,7 @@ public class TestFastSkip implements Serializable {
         try {
             tokens = TokenParser.tokenize(expr);
             factor.fastSkipLpExpRp(tokens);
-            return queueToString(tokens);
+            return Utils.queueToString(tokens);
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -62,18 +62,9 @@ public class TestFastSkip implements Serializable {
         try {
             tokens = TokenParser.tokenize(expr);
             tokens = factor.extractExpOfLpExpRp(tokens);
-            return queueToString(tokens);
+            return Utils.queueToString(tokens);
         } catch (Exception e) {
             return e.getMessage();
         }
-    }
-
-    private String queueToString(Deque deque){
-        if (null == deque)return "";
-        StringBuilder sb = new StringBuilder();
-        for (Object obj : deque){
-            sb.append(obj.toString());
-        }
-        return sb.toString();
     }
 }

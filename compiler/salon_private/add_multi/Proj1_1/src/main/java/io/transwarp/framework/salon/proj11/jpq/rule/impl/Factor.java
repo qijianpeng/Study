@@ -24,10 +24,6 @@ import java.util.Stack;
 public class Factor implements Rule {
     Expr expRule = null;
 
-    public Expr getExpRule() {
-        return expRule;
-    }
-
     public void setExpRule(Expr expRule) {
         this.expRule = expRule;
     }
